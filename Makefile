@@ -6,6 +6,13 @@ COLOROFF="\e[0m"
 INFO="${COLORON}[INFO]${COLOROFF} "
 ERROR="${COLORONB}[ERROR]${COLOROFF} "
 
+V?=0
+ifeq ($(V),0)
+Q=@
+else
+Q=
+endif
+
 all:	inform test
 
 inform:
@@ -17,17 +24,19 @@ ifneq (${GHDL_BACKEND},gcc)
 endif
 
 test-compile:
-	@ghdl -a adder.vhdl
-	@ghdl -a adder_tb.vhdl
+	$(Q)ghdl -a src/adder.vhdl
+	$(Q)ghdl -a tb/adder_tb.vhdl
+	$(Q)ghdl -e adder_tb
 
 test:	test-compile
-	@ghdl -e adder_tb
-	@ghdl -r adder_tb || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
-	@echo "${INFO}To do GTKWAVE plotting, \"make wave\""
+	$(Q)ghdl -r adder_tb || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)echo "${INFO}All tests passed."
+	$(Q)echo "${INFO}To do GTKWAVE plotting, \"make wave\""
 
 wave:	test-compile
-	@ghdl -r adder_tb --vcd=adder.vcd
-	@gtkwave adder.vcd
+	$(Q)mkdir -p simulation
+	$(Q)ghdl -r adder_tb --vcdgz=simulation/adder.vcd.gz || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)zcat simulation/adder.vcd.gz | gtkwave --vcd
 
 clean:
-	rm -f work-obj93.cf *.o adder_tb simulation/
+	$(Q)rm -rf work-obj93.cf *.o adder_tb simulation/

@@ -1,4 +1,7 @@
 --  A testbench has no ports.
+library std;
+use std.textio.all;
+
 entity adder_tb is
 end adder_tb;
 
@@ -21,9 +24,9 @@ begin
   process
     type pattern_type is record
       --  The inputs of the adder.
-      i0, i1, ci : bit;
+      f_i0, f_i1, f_ci : bit;
       --  The expected outputs of the adder.
-      s, co : bit;
+      f_s, f_co : bit;
     end record;
     --  The patterns to apply.
     type pattern_array is array (natural range <>) of pattern_type;
@@ -33,23 +36,23 @@ begin
        ('0', '1', '0', '1', '0'),
        ('0', '1', '1', '0', '1'),
        ('1', '0', '0', '1', '0'),
-       ('1', '0', '1', '0', '0'),
+       ('1', '0', '1', '0', '1'),
        ('1', '1', '0', '0', '1'),
        ('1', '1', '1', '1', '1'));
   begin
     --  Check each pattern.
     for i in patterns'range loop
       --  Set the inputs.
-      i0 <= patterns(i).i0;
-      i1 <= patterns(i).i1;
-      ci <= patterns(i).ci;
+      i0 <= patterns(i).f_i0;
+      i1 <= patterns(i).f_i1;
+      ci <= patterns(i).f_ci;
       --  Wait for the results.
       wait for 1 ns;
       --  Check the outputs.
-      assert s = patterns(i).s
+      assert s = patterns(i).f_s
         report "bad sum value" severity error;
-      assert co = patterns(i).co
-        report "bad carry out value" severity failure;
+      assert co = patterns(i).f_co
+        report "bad carry out value, co=" & bit'Image(co) severity failure;
         -- report "bad carry out value" severity error;
     end loop;
     assert false report "end of test" severity note;
