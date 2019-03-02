@@ -24,19 +24,20 @@ ifneq (${GHDL_BACKEND},gcc)
 endif
 
 test-compile:
-	$(Q)ghdl -a src/adder.vhdl
-	$(Q)ghdl -a tb/adder_tb.vhdl
-	$(Q)ghdl -e adder_tb
+	$(Q)mkdir -p work
+	$(Q)ghdl -a --workdir=work src/adder.vhdl
+	$(Q)ghdl -a --workdir=work tb/adder_tb.vhdl
+	$(Q)ghdl -e --workdir=work adder_tb
 
 test:	test-compile
-	$(Q)ghdl -r adder_tb || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)ghdl -r --workdir=work adder_tb || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
 	$(Q)echo "${INFO}All tests passed."
 	$(Q)echo "${INFO}To do GTKWAVE plotting, \"make wave\""
 
 wave:	test-compile
 	$(Q)mkdir -p simulation
-	$(Q)ghdl -r adder_tb --vcdgz=simulation/adder.vcd.gz || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)ghdl -r --workdir=work adder_tb --vcdgz=simulation/adder.vcd.gz || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
 	$(Q)zcat simulation/adder.vcd.gz | gtkwave --vcd
 
 clean:
-	$(Q)rm -rf work-obj93.cf *.o adder_tb simulation/
+	$(Q)rm -rf work-obj93.cf work/ *.o adder_tb simulation/
