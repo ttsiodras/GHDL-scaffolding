@@ -17,10 +17,10 @@ all:	inform test
 
 inform:
 ifneq (${GHDL_BACKEND},gcc)
-	@echo "${INFO}Note that you can run much faster via:"
-	@echo "${INFO}"
-	@echo "${INFO}    GHDL_BACKEND=gcc make ..."
-	@echo "${INFO}"
+	@echo -e "${INFO}Note that you can run much faster via:"
+	@echo -e "${INFO}"
+	@echo -e "${INFO}    GHDL_BACKEND=gcc make ..."
+	@echo -e "${INFO}"
 endif
 
 test-compile:
@@ -30,13 +30,13 @@ test-compile:
 	$(Q)ghdl -e --workdir=work adder_tb
 
 test:	test-compile
-	$(Q)ghdl -r --workdir=work adder_tb || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
-	$(Q)echo "${INFO}All tests passed."
-	$(Q)echo "${INFO}To do GTKWAVE plotting, \"make wave\""
+	$(Q)ghdl -r --workdir=work adder_tb || { echo -e "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)echo -e "${INFO}All tests passed."
+	$(Q)echo -e "${INFO}To do GTKWAVE plotting, \"make wave\""
 
 wave:	test-compile
 	$(Q)mkdir -p simulation
-	$(Q)ghdl -r --workdir=work adder_tb --vcdgz=simulation/adder.vcd.gz || { echo "${ERROR}Failure... Aborting" ; exit 1 ; }
+	$(Q)ghdl -r --workdir=work adder_tb --vcdgz=simulation/adder.vcd.gz || { echo  -e "${ERROR}Failure... Aborting" ; exit 1 ; }
 	$(Q)zcat simulation/adder.vcd.gz | gtkwave --vcd
 
 clean:
