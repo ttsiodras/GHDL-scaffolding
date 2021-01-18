@@ -101,13 +101,14 @@ begin
       input_x <= patterns(i).ix;
       input_y <= patterns(i).iy;
       startWorking <= '1';
+      wait for cycle_period;
+      startWorking <= '0';
+      writeline(OUTPUT, l);
       write(l, string'("Testing for input X:"));
       write(l, to_hex(input_x));
       write(l, string'(" and input Y:"));
       write(l, to_hex(input_y));
       writeline(OUTPUT, l);
-      wait for cycle_period;
-      startWorking <= '0';
 
       --  Wait for the results.
       write(l, string'("Waiting for circuit to indicate completeness..."));
