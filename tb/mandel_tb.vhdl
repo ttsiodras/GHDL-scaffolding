@@ -36,7 +36,7 @@ architecture behav of mandel_tb is
     );
   end component;
 
-  for mandel_0: MandelBrot use entity work.MandelBrot;
+  -- for mandel_0: MandelBrot use entity work.MandelBrot;
 
 
   -- 50 MHz clock
