@@ -1,7 +1,11 @@
 .PHONY:	all test compile wave
 
-SRC:=$(wildcard src/*vhdl) $(wildcard tb/*vhdl)
-TB:=adder_tb
+SRC:=                 \
+    src/mytypes.vhdl  \
+    src/mandel.vhdl   \
+    tb/mandel_tb.vhdl
+TB:=mandel_tb
+GHDL_OPTIONS=--ieee=synopsys --workdir=work --std=08
 
 V?=0
 ifeq ($(V),0)
@@ -18,14 +22,14 @@ compile:	.built
 	$(Q)mkdir -p work
 	@echo "[-] Analysing files... "
 	@bash -c 'for i in ${SRC} ; do echo -e "\t$$i" ; done'
-	$(Q)ghdl -a --workdir=work ${SRC}
+	$(Q)ghdl -a ${GHDL_OPTIONS} ${SRC}
 	@echo "[-] Elaborating test bench..."
-	$(Q)ghdl -e --workdir=work ${TB}
+	$(Q)ghdl -e ${GHDL_OPTIONS} ${TB}
 	@touch $@
 
 test:	compile
 	@echo "[-] Running ${TB} unit..."
-	$(Q)ghdl -r --workdir=work ${TB} || { \
+	$(Q)ghdl -r ${GHDL_OPTIONS} ${TB} || { \
 	    echo "[x] Failure. Aborting..." ; \
 	    exit 1 ; \
 	}
@@ -34,8 +38,11 @@ test:	compile
 
 waves:	compile
 	$(Q)mkdir -p simulation
-	$(Q)ghdl -r --workdir=work ${TB} --vcdgz=simulation/adder.vcd.gz || { echo "[x] Failure. Aborting..." ; exit 1 ; }
-	$(Q)zcat simulation/adder.vcd.gz | gtkwave --vcd
+	$(Q)ghdl -r ${GHDL_OPTIONS} ${TB} --vcdgz=simulation/mandel.vcd.gz || { \
+	    echo "[x] Failure. Aborting..." ; \
+	    exit 1 ; \
+       	}
+	$(Q)zcat simulation/mandel.vcd.gz | gtkwave --vcd
 
 clean:
 	$(Q)rm -rf work-obj93.cf work/ *.o ${TB} simulation/ .built
