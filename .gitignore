@@ -5,3 +5,6 @@ e~adder_tb.o
 simulation/
 work-obj93.cf
 .built
+**/*.o
+mandel_tb
+work
