@@ -77,17 +77,34 @@ begin
        (X"fd333334", X"fc666667", X"00000004"),
        (X"fe666667", X"fc666667", X"00000005"),
        (X"ff99999a", X"fc666667", X"00000012"));
+
+
+   procedure echo(msg : string) is
+      variable l : line;
+    begin
+      write(l, msg);
+      writeline(OUTPUT, l);
+    end;
+
   begin
+    -- Reset for 100 cycles
+    rst <= '1';
+    wait for 2*cycle_period;
+    rst <= '0';
+    wait for 5*cycle_period;
+
     --  Check each one of our sample tests..
     for i in patterns'range loop
       --  Set the inputs.
       input_x <= patterns(i).ix;
       input_y <= patterns(i).iy;
       startWorking <= '1';
+      echo("Testing one input...");
       wait for cycle_period;
       startWorking <= '0';
 
       --  Wait for the results.
+      echo("Waiting for circuit to indicate completeness...");
       wait until finishedWorking = '1';
 
       --  Check the outputs.
