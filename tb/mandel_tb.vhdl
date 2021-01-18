@@ -15,7 +15,7 @@ end mandel_tb;
 
 architecture behav of mandel_tb is
   --  Declaration of the component that will be instantiated.
-  component mandel
+  component MandelBrot
     port (
       clk              : in std_logic;
       rst              : in std_logic;
@@ -36,6 +36,9 @@ architecture behav of mandel_tb is
     );
   end component;
 
+  for mandel_0: MandelBrot use entity work.MandelBrot;
+
+
   -- 50 MHz clock
   constant half_period : time  := 10 ns;
   constant cycle_period : time  := 20 ns;
@@ -44,13 +47,14 @@ architecture behav of mandel_tb is
   signal rst : std_logic := '1'; -- make sure you initialise!
   signal input_x, input_y : std_logic_vector(31 downto 0);
   signal startWorking : std_logic := '0';
-  signal finishedWorking : std_logic := '0';
+  signal finishedWorking : std_logic := '1';
   signal OutputNumber : std_logic_vector(7 downto 0);
+
 begin
   clk <= not clk after half_period;
 
   --  Component instantiation.
-  mandel_0: mandel port map (
+  mandel_0: MandelBrot port map (
     clk => clk,
     rst => rst,
     input_x => input_x,
@@ -76,16 +80,14 @@ begin
        (X"fc000000", X"fc666667", X"00000003"),
        (X"fd333334", X"fc666667", X"00000004"),
        (X"fe666667", X"fc666667", X"00000005"),
-       (X"ff99999a", X"fc666667", X"00000012"));
+       (X"ff99999a", X"fc666667", X"00000018"));
 
-
-   procedure echo(msg : string) is
-      variable l : line;
+    function to_hex(i : std_logic_vector(31 downto 0)) return string is
     begin
-      write(l, msg);
-      writeline(OUTPUT, l);
+      return "0x" & to_hstring(i);
     end;
 
+    variable l : line;
   begin
     -- Reset for 100 cycles
     rst <= '1';
@@ -99,20 +101,31 @@ begin
       input_x <= patterns(i).ix;
       input_y <= patterns(i).iy;
       startWorking <= '1';
-      echo("Testing one input...");
+      write(l, string'("Testing for input X:"));
+      write(l, to_hex(input_x));
+      write(l, string'(" and input Y:"));
+      write(l, to_hex(input_y));
+      writeline(OUTPUT, l);
       wait for cycle_period;
       startWorking <= '0';
 
       --  Wait for the results.
-      echo("Waiting for circuit to indicate completeness...");
+      write(l, string'("Waiting for circuit to indicate completeness..."));
+      writeline(OUTPUT, l);
       wait until finishedWorking = '1';
+      wait until finishedWorking = '0';
 
+      write(l, string'("Got result:   "));
+      write(l, to_hex(X"000000" & OutputNumber));
+      writeline(OUTPUT, l);
+      write(l, string'("Was expecting:"));
+      write(l, to_hex(patterns(i).o));
+      writeline(OUTPUT, l);
       --  Check the outputs.
       assert OutputNumber = patterns(i).o
         report "bad mandelbrot result value" severity error;
-        -- report "bad carry out value" severity error;
     end loop;
-    assert false report "end of test" severity note;
+    -- assert false report "end of test" severity note;
     --  Wait forever; this will finish the simulation.
     wait;
   end process;

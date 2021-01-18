@@ -93,7 +93,7 @@ begin
                     state <= comp_stage3;
 
                 when comp_stage3 =>
-                    if to_slv(magnitude)(31 downto 29) /= "000" then
+                    if to_slv(magnitude)(31 downto 28) /= "0000" then
                         state <= computed;
                     else
                         state <= comp_stage4;
