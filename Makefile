@@ -1,4 +1,4 @@
-.PHONY:	all test compile wave
+.PHONY:	all test compile waves
 
 SRC:=                 \
     src/mytypes.vhdl  \
