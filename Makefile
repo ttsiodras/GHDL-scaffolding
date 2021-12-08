@@ -2,13 +2,10 @@
 
 export GHDL_BACKEND=llvm
 
-SRC:=                 \
-    src/mytypes.vhdl  \
-    src/mandel.vhdl   \
-    tb/mandel_tb.vhdl
-TB:=mandel_tb
+SRC:=src/simplegic.vhdl tb/simplegic_tb.vhdl
+TB:=simplegic_tb
 GHDL_COMPILE_OPTIONS=--ieee=synopsys --workdir=work --std=08
-GHDL_RUN_OPTIONS=--stop-time=5ms
+GHDL_RUN_OPTIONS=--stop-time=1us
 
 V?=0
 ifeq ($(V),0)
@@ -41,11 +38,11 @@ test:	compile
 
 waves:	compile
 	$(Q)mkdir -p simulation
-	$(Q)ghdl -r ${GHDL_COMPILE_OPTIONS} ${TB} ${GHDL_RUN_OPTIONS} --vcdgz=simulation/mandel.vcd.gz || { \
+	$(Q)ghdl -r ${GHDL_COMPILE_OPTIONS} ${TB} ${GHDL_RUN_OPTIONS} --vcdgz=simulation/simplegic.vcd.gz || { \
 	    echo "[x] Failure. Aborting..." ; \
 	    exit 1 ; \
        	}
-	$(Q)zcat simulation/mandel.vcd.gz | gtkwave --vcd
+	$(Q)zcat simulation/simplegic.vcd.gz | gtkwave --vcd
 
 clean:
 	$(Q)rm -rf work-obj93.cf work/ *.o ${TB} simulation/ .built
