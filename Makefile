@@ -5,7 +5,7 @@ export GHDL_BACKEND=llvm
 SRC:=src/simplegic.vhdl tb/simplegic_tb.vhdl
 TB:=simplegic_tb
 GHDL_COMPILE_OPTIONS=--ieee=synopsys --workdir=work --std=08
-GHDL_RUN_OPTIONS=--stop-time=1us
+GHDL_RUN_OPTIONS=--stop-time=500ns
 
 V?=0
 ifeq ($(V),0)

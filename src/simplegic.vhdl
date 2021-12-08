@@ -24,31 +24,11 @@ architecture arch of GIC is
     );
     signal state : state_type;
 
-    -- we want to go down from 150MHz to 100Hz;
-    -- so we need to divide by 1_500_000;
-    signal counter : unsigned(32 downto 0);
-    signal decimated_CLK : std_logic;
     signal ready_for_next : std_logic;
     signal debug_state : integer;
 begin
 
     debug_state <= state_type'pos(state);
-
-    -- decimate the clock
-    process (RST, CLK)
-    begin
-        if (RST='1') then
-            counter <= (others => '0');
-            decimated_CLK <= '1';
-
-        elsif rising_edge(CLK) then
-            counter <= counter + 1;
-            if counter = 1_500_000 then
-                counter <= (others => '0');
-                decimated_CLK <= decimated_CLK xor '1';
-            end if;
-        end if;
-    end process;
 
     process (RST, CLK)
     begin
