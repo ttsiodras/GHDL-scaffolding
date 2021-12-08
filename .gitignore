@@ -8,3 +8,4 @@ work-obj93.cf
 **/*.o
 mandel_tb
 work
+simplegic_tb
